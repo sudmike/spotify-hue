@@ -24,7 +24,7 @@
               "src/assets"
             ],
             "styles": [
-              "node_modules/bootstrap-4.5.3/dist/css/bootstrap.min.css",
+              "node_modules/bootstrap/dist/css/bootstrap_darkly.min.css",
               "src/styles.css"
             ],
             "scripts": []

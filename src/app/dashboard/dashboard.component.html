@@ -1,0 +1,15 @@
+<script src="dashboard.component.ts"></script>
+<div class="container-fluid">
+  <div class="row">
+    <div class="col-1"></div>
+    <div class="col-5">
+      <p>{{currentTrack.name}}</p>
+      <p>{{currentTrack.id}}</p>
+    </div>
+    <div class="col-1"></div>
+    <div class="col-4">
+        <img class="p-5 rounded" src="{{currentTrack.imagePath}}" [style.background-color]="cardBackgroundColor">
+    </div>
+    <div class="col-1"></div>
+  </div>
+</div>
