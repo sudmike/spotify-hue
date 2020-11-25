@@ -1,15 +1,16 @@
 <script src="dashboard.component.ts"></script>
 <div class="container-fluid">
-  <div class="row">
-    <div class="col-1"></div>
-    <div class="col-5">
-      <p>{{currentTrack.name}}</p>
-      <p>{{currentTrack.id}}</p>
+  <div class="row justify-content-center">
+    <div class="col-5 align-self-center text-right px-5">
+        <p class="h2">{{currentTrack.name}}</p>
+        <p class="text-muted h4">
+        <span *ngFor="let artist of currentTrack.artists; let lastArtist = last">
+          {{artist}}{{lastArtist ? '' : ', '}}
+        </span>
     </div>
-    <div class="col-1"></div>
-    <div class="col-3">
+    <div class="col-4 px-5">
         <img class="col-12 p-5 rounded" src="{{currentTrack.imagePath[0]}}" [style.background-color]="cardBackgroundColor">
     </div>
-    <div class="col-2"></div>
+    <div class="col-1"></div>
   </div>
 </div>
