@@ -36,7 +36,7 @@ export class DashboardSupportService {
               }
             }
             else { // different Track -> inform subscribers and get the color
-              this.backendComms.getColorOfImg(data.imagePath)
+              this.backendComms.getColorOfImg(data.imagePath[1])
                 .then(colors => {
                   data.imageHsl = colors.hsl;
                   data.imageRgb = colors.rgb;

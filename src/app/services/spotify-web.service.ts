@@ -25,7 +25,12 @@ export class SpotifyWebService {
           return Promise.reject(Error('Not currently listening'));
         }
         else{
-          return new Track(data.item.id, data.item.name, data.item.album.images[1].url, data.is_playing);
+          return new Track(
+            data.item.id,
+            data.item.name,
+            data.item.artists.map(artist => artist.name),
+            data.item.album.images.map(image => image.url),
+            data.is_playing);
         }
       })
       .catch(err => {
