@@ -25,7 +25,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
         console.log('change detected', data.name, data.playing);
         this.currentTrack = data;
         if (data.imageRgb){ // if rgb is provided, change color behind image
-          this.cardBackgroundColor = this.support.rgbToHex(data.imageRgb);
+          this.setImageBackground(data.imageRgb);
 
           if (data.imageHsl){ // if hsl is also provided, set color of philips hues
 
@@ -34,6 +34,32 @@ export class DashboardComponent implements OnInit, OnDestroy {
       }, (err => {
         console.log('Subscription returns Error', err);
       }));
+  }
+
+  setImageBackground(rgb: number[]): void{
+
+    // check for valid numbers
+    if (rgb[0] === undefined || rgb[1] === undefined || rgb[2] === undefined ||
+      !(rgb[0] >= 0 && rgb[0] <= 255) ||
+      !(rgb[1] >= 0 && rgb[1] <= 255) ||
+      !(rgb[2] >= 0 && rgb[2] <= 255)
+    ){
+      this.cardBackgroundColor = '#000000';
+    }
+    else {
+      // check if image is greyscale
+      const average = (rgb[0] + rgb[1] + rgb[2]) / 3;
+      const variance = (Math.pow(rgb[0] - average, 2) + Math.pow(rgb[1] - average, 2) + Math.pow(rgb[2] - average, 2)) ;
+      if (variance < 80){ // grey because r,g,b are very similar -> set background to white
+        this.cardBackgroundColor = '#ffffff';
+      }
+      else { // image has color
+        rgb[0] = Math.round(rgb[0]);
+        rgb[1] = Math.round(rgb[1]);
+        rgb[2] = Math.round(rgb[2]);
+        this.cardBackgroundColor = this.support.rgbToHex(rgb);
+      }
+    }
   }
 
   ngOnDestroy(): void {
