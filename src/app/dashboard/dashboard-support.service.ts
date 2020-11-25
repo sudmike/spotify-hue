@@ -18,25 +18,37 @@ export class DashboardSupportService {
               private spotifyService: SpotifyWebService) {
   }
 
-  /* subscribable Function oÄ that pushes news about song change */
-  /* subscribable Function oÄ that pushes news about pause/unpause */
 
   beginCheckingCurrentTrack(): Observable<Track>{
     this.trackUpdateObservable = Observable.create(observer => {
       this.intervalSubscription = interval(5000).subscribe(() => {
         this.spotifyService.getCurrentTrack()
           .then(data => {
-            console.log('Data', data);
-            this.backendComms.getColorOfImg(data.imagePath)
-              .then(colors => {
-                data.imageHsl = colors.hsl;
-                data.imageRgb = colors.rgb;
+            if (this.current !== undefined && data.id === this.current.id){ // same Track
+              if (data.playing === this.current.playing){ // same playstate -> no changes
+                // do nothing
+              }
+              else { // pause/resume -> inform subscribers without getting the color
+                data.imageRgb = this.current.imageRgb;
+                data.imageHsl = this.current.imageHsl;
+                this.current.playing = data.playing;
                 observer.next(data);
-              })
-              .catch(err => {
-                console.log('No color from backend: ', err);
-                observer.next(data);
-              });
+              }
+            }
+            else { // different Track -> inform subscribers and get the color
+              this.backendComms.getColorOfImg(data.imagePath)
+                .then(colors => {
+                  data.imageHsl = colors.hsl;
+                  data.imageRgb = colors.rgb;
+                  this.current = data;
+                  observer.next(data);
+                })
+                .catch(err => {
+                  console.log('No color from backend: ', err);
+                  this.current = data;
+                  observer.next('Non critical Error:', data);
+                });
+            }
           })
           .catch(err => {
             this.intervalSubscription.unsubscribe(); // stop checking every 5 seconds
