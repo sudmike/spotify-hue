@@ -19,15 +19,23 @@ export class SpotifyWebService {
   }
 
   async getCurrentTrack(): Promise<Track> {
-
     return this.spotifyApi.getMyCurrentPlayingTrack()
       .then(data => {
-        return new Track(data.item.id, data.item.name, data.item.album.images[1].url, data.is_playing);
-        // return of(new Track(data.item.name, data.item.id, data.item.album.images[1].url));
+        if (!data.item){ // case that Spotify answers but without any data
+          return Promise.reject(Error('Not currently listening'));
+        }
+        else{
+          return new Track(data.item.id, data.item.name, data.item.album.images[1].url, data.is_playing);
+        }
       })
       .catch(err => {
-        console.log(err);
-        return Promise.reject(Error('Unable to get current Track'));
+        if (err instanceof Error){
+          return Promise.reject(err);
+        }
+        else {
+          console.log(err);
+          return Promise.reject(Error('Unable to get current Track'));
+        }
       });
   }
 }
