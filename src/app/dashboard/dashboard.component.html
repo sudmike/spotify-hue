@@ -2,14 +2,15 @@
 <div class="container-fluid">
   <div class="row justify-content-center">
     <div class="col-5 align-self-center text-right px-5">
-        <p class="h2">{{currentTrack.name}}</p>
-        <p class="text-muted h4">
-        <span *ngFor="let artist of currentTrack.artists; let lastArtist = last">
-          {{artist}}{{lastArtist ? '' : ', '}}
-        </span>
+        <h2 style="font-size:2.5vw;">{{currentTrack.name}}</h2>
+        <p class="text-muted" style="font-size:1.5vw;">
+          <span *ngFor="let artist of currentTrack.artists; let lastArtist = last">
+            {{artist}}{{lastArtist ? '' : ', '}}
+          </span>
+        </p>
     </div>
     <div class="col-4 px-5">
-        <img class="col-12 p-5 rounded" src="{{currentTrack.imagePath[0]}}" [style.background-color]="cardBackgroundColor">
+        <img class="col-12 rounded" src="{{currentTrack.imagePath[0]}}" [style.background-color]="cardBackgroundColor" style="padding: 2.5vw">
     </div>
     <div class="col-1"></div>
   </div>
