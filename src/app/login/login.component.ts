@@ -8,7 +8,7 @@ import { Component, OnInit } from '@angular/core';
 export class LoginComponent implements OnInit {
 
   constructor() {
-    window.location.href = 'http://localhost:3000/hue/api/login';
+    window.location.href = 'http://localhost:3000/hue/api/spotify-login';
   }
 
   ngOnInit(): void {

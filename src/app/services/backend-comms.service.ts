@@ -14,7 +14,7 @@ export class BackendCommsService {
   // asynchronous function that takes the URL of an image and gets the most prominent color over the backend
   async getColorOfImg(imgURL: string): Promise<{ rgb: number[], hsl: number[] }> {
 
-    return this.http.get(this.backendUrl + '/color' + '?imageURL=' + imgURL).toPromise() // bad style ?
+    return this.http.get(this.backendUrl + '/vibrant-color' + '?imageURL=' + imgURL).toPromise() // bad style ?
       .then((res:
                   { status: string, data: { hsl: number[], rgb: number[] } } |
                   { status: string, message: string }
