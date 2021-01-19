@@ -28,11 +28,12 @@ export class DashboardComponent implements OnInit, OnDestroy {
           this.setImageBackground(data.imageRgb);
 
           if (data.imageHsl){ // if hsl is also provided, set color of philips hues
-
+            console.log(data.imageHsl);
+            this.support.setLights(data.imageHsl);
           }
         }
       }, (err => {
-        console.log('Subscription returns Error', err);
+        console.log('Subscription returns Error: ', err.message);
       }));
   }
 

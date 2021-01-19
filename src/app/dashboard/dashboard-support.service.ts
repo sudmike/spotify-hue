@@ -111,7 +111,21 @@ export class DashboardSupportService {
     return hex.length === 1 ? '0' + hex : hex;
   }
 
+  setLights(hsl: number[]): void {
 
+    console.log(hsl[0], Math.floor(this.map(hsl[0], 0, 1, 0, 360)));
+    console.log(hsl[1], Math.floor(this.map(hsl[1], 0, 1, 0, 100)));
+    console.log(hsl[2], Math.floor(this.map(hsl[2], 0, 1, 0, 100)));
+    this.backendComms.setLights([
+      Math.floor(this.map(hsl[0], 0, 1, 0, 360)),
+      Math.floor(this.map(hsl[1], 0, 1, 0, 100)),
+      Math.floor(this.map(hsl[2], 0, 1, 0, 100))
+    ]);
+  }
+
+  map(value: number, x1: number, y1: number, x2: number, y2: number): number {
+    return (value - x1) * (y2 - x2) / (y1 - x1) + x2;
+  }
   ngOnInitCustom(): void {
   }
 
