@@ -1,4 +1,5 @@
 import { Component } from '@angular/core';
+import { SpotifyWebService } from './services/spotify-web.service';
 
 @Component({
   selector: 'app-root',
@@ -7,4 +8,11 @@ import { Component } from '@angular/core';
 })
 export class AppComponent {
   title = 'spotify-hue';
+
+  constructor(private spotifyService: SpotifyWebService) {
+  }
+
+  tempRefresh(): void {
+    this.spotifyService.refreshAccessToken();
+  }
 }

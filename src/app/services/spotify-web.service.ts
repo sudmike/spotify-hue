@@ -1,5 +1,6 @@
 import { Injectable } from '@angular/core';
 import SpotifyWebApi from 'spotify-web-api-js';
+import { BackendCommsService } from './backend-comms.service';
 import { Track } from '../shared/track.model';
 
 @Injectable({
@@ -10,7 +11,7 @@ export class SpotifyWebService {
 
   private spotifyApi = new SpotifyWebApi();
 
-  constructor() { }
+  constructor( private backendService: BackendCommsService) { }
 
   setAccessToken(accessToken: string): void{
     this.spotifyApi.setAccessToken(accessToken);
@@ -44,6 +45,16 @@ export class SpotifyWebService {
           // console.log(err);
           return Promise.reject(Error('Unable to get current Track'));
         }
+      });
+  }
+
+  refreshAccessToken(): void {
+    this.backendService.getSpotifyRefresh()
+      .then(data => {
+        this.setAccessToken(data.accessToken);
+      })
+      .catch(err => {
+        console.log(err);
       });
   }
 }
