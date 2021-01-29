@@ -14,7 +14,7 @@ export class BackendCommsService {
   // asynchronous function that takes the URL of an image and gets the most prominent color over the backend
   async getColorOfImg(imgURL: string): Promise<{ rgb: number[], hsl: number[] }> {
 
-    return this.http.get(this.backendUrl + '/color' + '?imageURL=' + imgURL).toPromise() // bad style ?
+    return this.http.get(this.backendUrl + '/vibrant-color' + '?imageURL=' + imgURL).toPromise() // bad style ?
       .then((res:
                   { status: string, data: { hsl: number[], rgb: number[] } } |
                   { status: string, message: string }
@@ -39,8 +39,38 @@ export class BackendCommsService {
       });
   }
 
-  // asynchronous function that takes an hsl color set and tells the backend to set the philips hues accordingly
-  setColorChange(hsl: number[]): void {
+  async getSpotifyRefresh(): Promise<{accessToken: string}> {
+    return this.http.get(this.backendUrl + '/spotify-refresh').toPromise()
+      .then((res:
+               {status: string, data: {accessToken: string}} |
+               {status: string, message: string}
+      ) => {
+        console.log(res);
+        if (res.status === 'success'){
+          return {accessToken: (res as {status: string, data: {accessToken: string}}).data.accessToken};
+        }
+        else {
+          return Promise.reject(Error((res as {status: string, message: string}).message));
+        }
+      })
+      .catch(err => {
+        if (err instanceof Error) {
+          return Promise.reject(err);
+        }
+        else {
+          return Promise.reject(Error('Communication with backend failed while trying to refresh spotify access token!'));
+        }
+      });
+  }
 
+  // asynchronous function that takes an hsl color set and tells the backend to set the philips hues accordingly
+  setLights(HSL: number[], Brightness: number): void {
+    this.http.post(this.backendUrl + '/hue-setLights', {hsl: HSL, brightness: Brightness}).toPromise()
+      .then(data => {
+        console.log(data);
+      })
+      .catch(err => {
+        console.log(err);
+      });
   }
 }

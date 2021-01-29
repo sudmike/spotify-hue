@@ -5,6 +5,10 @@
 </head>
 <body>
   <h1>Welcome to {{ title }}!</h1>
+  <a href="http://localhost:3000/hue/api/hue-login/debug" target="_blank" rel="noopener noreferrer">Debug Backend initialisation</a>
+  <br>
+  <button class="btn btn-primary" (click)="tempRefresh()">Debug Refresh Token</button>
+  <button class="btn btn-primary" routerLink="dashboard">Dashboard</button>
   <hr>
   <router-outlet></router-outlet>
 </body>

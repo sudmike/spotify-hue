@@ -1,0 +1,10 @@
+.range-container {
+  display: grid;
+  grid-template-columns: 0.2fr 2.6fr 0.2fr;
+  grid-template-rows: 1fr;
+  gap: 0 1em;
+}
+
+.range-container img {
+  text-align: center;
+}
