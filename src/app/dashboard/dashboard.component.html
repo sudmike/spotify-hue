@@ -2,15 +2,20 @@
 <div class="container-fluid">
   <div class="row justify-content-center">
     <div class="col-5 align-self-center text-right px-5">
-        <h2 style="font-size:2.5vw;">{{currentTrack.name}}</h2>
-        <p class="text-muted" style="font-size:1.5vw;">
-          <span *ngFor="let artist of currentTrack.artists; let lastArtist = last">
-            {{artist}}{{lastArtist ? '' : ', '}}
-          </span>
-        </p>
+      <h2 style="font-size:2.5vw;">{{currentTrack.name}}</h2>
+      <p class="text-muted" style="font-size:1.5vw;">
+        <span *ngFor="let artist of currentTrack.artists; let lastArtist = last">
+          {{artist}}{{lastArtist ? '' : ', '}}
+        </span>
+      </p>
     </div>
     <div class="col-4 px-5">
-        <img class="col-12 rounded" src="{{currentTrack.imagePath[0]}}" [style.background-color]="cardBackgroundColor" style="padding: 2.5vw">
+      <img class="col-12 rounded" src="{{currentTrack.imagePath[0]}}" [style.background-color]="cardBackgroundColor" style="padding: 2.5vw" >
+      <div class="range-container mt-3">
+        <img src="../../assets/moon.svg" style="width: 1.5em">
+        <input type="range" class="custom-range" min="0.01" max="1.0" step="any" [(ngModel)]="brightnessRange" (click)="onBrightnessChange()">
+        <img src="../../assets/sun.svg" style="width: 1.85em">
+      </div>
     </div>
     <div class="col-1"></div>
   </div>

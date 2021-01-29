@@ -64,8 +64,8 @@ export class BackendCommsService {
   }
 
   // asynchronous function that takes an hsl color set and tells the backend to set the philips hues accordingly
-  setLights(HSL: number[]): void {
-    this.http.post(this.backendUrl + '/hue-setLights', {hsl: HSL}).toPromise()
+  setLights(HSL: number[], Brightness: number): void {
+    this.http.post(this.backendUrl + '/hue-setLights', {hsl: HSL, brightness: Brightness}).toPromise()
       .then(data => {
         console.log(data);
       })

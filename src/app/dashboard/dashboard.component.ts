@@ -5,10 +5,13 @@ import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-dashboard',
-  templateUrl: './dashboard.component.html'
+  templateUrl: './dashboard.component.html',
+  styleUrls: ['dashboard.component.css']
 })
 
 export class DashboardComponent implements OnInit, OnDestroy {
+
+  brightnessRange = 1.0;
 
   currentTrack = new Track();
   cardBackgroundColor: string;
@@ -29,12 +32,21 @@ export class DashboardComponent implements OnInit, OnDestroy {
 
           if (data.imageHsl){ // if hsl is also provided, set color of philips hues
             console.log(data.imageHsl);
-            this.support.setLights(data.imageHsl);
+            this.support.setLights(data.imageHsl, this.brightnessRange);
           }
         }
       }, (err => {
         console.log('Subscription returns Error: ', err.message);
       }));
+  }
+
+  onBrightnessChange(): void {
+    if (this.currentTrack && this.currentTrack.imageHsl){
+      this.support.setLights(this.currentTrack.imageHsl, this.brightnessRange);
+    }
+    else{
+      console.log('Could not act on brightness change because there is no current track!');
+    }
   }
 
   setImageBackground(rgb: number[]): void{
