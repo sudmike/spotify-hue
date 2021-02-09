@@ -53,12 +53,9 @@ export class SpotifyWebService {
           }
         })
         .catch(err => {
-          if (err instanceof Error){
-            return Promise.reject(err);
-          }
-          else {
-            return Promise.reject(Error('Unable to get current Track'));
-          }
+          return (err instanceof Error)
+            ? Promise.reject(err)
+            : Promise.reject(Error('Unable to get current Track'));
         });
     }
   }
@@ -70,13 +67,9 @@ export class SpotifyWebService {
         return Promise.resolve();
       })
       .catch(err => {
-        console.log(err);
-        if (err instanceof Error){
-          return Promise.reject(err);
-        }
-        else {
-          return Promise.reject(Error('Could not refresh access token!'));
-        }
+        return (err instanceof Error)
+          ? Promise.reject(err)
+          : Promise.reject(Error('Could not refresh access token'));
       });
   }
 }

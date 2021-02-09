@@ -30,12 +30,9 @@ export class BackendCommsService {
           }
       })
       .catch(err => {
-        if (err instanceof Error) {
-          return Promise.reject(err);
-        }
-        else {
-          return Promise.reject(Error('Communication Error when getting color from backend'));
-        }
+        return (err instanceof Error)
+          ? Promise.reject(err)
+          : Promise.reject(Error('Communication Error when getting color from backend'));
       });
   }
 
@@ -54,12 +51,9 @@ export class BackendCommsService {
         }
       })
       .catch(err => {
-        if (err instanceof Error) {
-          return Promise.reject(err);
-        }
-        else {
-          return Promise.reject(Error('Communication with backend failed while trying to refresh spotify access token!'));
-        }
+        return (err instanceof Error)
+          ? Promise.reject(err)
+          : Promise.reject(Error('Communication with backend failed while trying to refresh spotify access token'));
       });
   }
 
