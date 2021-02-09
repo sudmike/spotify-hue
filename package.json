@@ -20,6 +20,7 @@
     "@angular/platform-browser-dynamic": "~10.1.6",
     "@angular/router": "~10.1.6",
     "bootstrap": "^4.5.3",
+    "ngx-cookie-service": "^11.0.2",
     "node-vibrant": "^3.2.1-alpha.1",
     "rxjs": "~6.6.0",
     "spotify-web-api-js": "^1.5.1",
