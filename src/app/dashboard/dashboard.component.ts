@@ -1,5 +1,5 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
-import { DashboardSupportService } from './dashboard-support.service';
+import { DashboardService } from './dashboard.service';
 import { Track } from '../shared/track.model';
 import { Subscription } from 'rxjs';
 
@@ -18,8 +18,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
   cardBackgroundColor: string;
   trackUpdateSubscription: Subscription;
 
-  constructor(private support: DashboardSupportService) {
-  }
+  constructor(private support: DashboardService) { }
 
   ngOnInit(): void {
     this.support.ngOnInitCustom();

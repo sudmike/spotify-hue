@@ -6,13 +6,12 @@
   <body>
     <p class="text-muted px-3 py-2" style="float: right">
       Session:
-      <span *ngIf="session !== '' && session !== undefined">{{session}}</span>
-      <span *ngIf="session === '' || session === undefined">
-        <a href="javascript:;" target="" rel="" (click)="initializeHue()">initialize Hue</a>
+      <span *ngIf="sessionActive">{{sessionValue}}</span>
+      <span *ngIf="!sessionValue">
+        <a href="http://localhost:3000/hue/api/hue-login" target="_blank" rel="">initialize Hue</a>
       </span>
     </p>
     <br>
-    <button class="btn btn-primary" (click)="tempRefresh()">Debug Refresh Token</button>
     <hr>
     <router-outlet></router-outlet>
   </body>
