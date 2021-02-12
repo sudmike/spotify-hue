@@ -75,5 +75,9 @@ export class HueSetupComponent implements OnInit, OnDestroy {
       });
   }
 
+  turnLightOff(lightID: number): void {
+    this.support.turnLightOff(lightID);
+  }
+
 
 }

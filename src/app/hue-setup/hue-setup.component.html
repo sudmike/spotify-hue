@@ -5,7 +5,7 @@
   <p>session active</p>
 
   <div class="row">
-    <div class="light-box col-4" *ngFor="let light of lights">
+    <div [className]="(light.reachable) ? 'light-box col-4' : 'light-box col-4 disabled-light-box'" *ngFor="let light of lights">
       <div *ngIf="light.reachable">
         <img *ngIf="light.active" src="assets/bulbOn.svg" (click)="activateLight(light.id, false)">
         <img *ngIf="!light.active" src="assets/bulbOff.svg" (click)="activateLight(light.id, true)">
@@ -14,13 +14,16 @@
         <img src="assets/bulbUnreachable.svg">
       </div>
       <p>{{light.name}}</p>
-      <button class="btn btn-dark" (click)="pingLight(light.id)">Ping Light</button>
+      <button class="btn btn-dark" [disabled]="!light.reachable" (click)="pingLight(light.id)" title="Ping">
+        <img src="assets/ping.svg">
+      </button>
+      <button class="btn btn-dark" [disabled]="!light.reachable" (click)="turnLightOff(light.id)" title="Turn Off">
+        <img src="assets/turn-off.svg">
+      </button>
     </div>
   </div>
 
   <button class="btn btn-danger" [disabled]="!lightsChanged" (click)="saveLightSelection()" >Save</button>
-
-  <p>{{lightsHash}}</p>
 
 </div>
 

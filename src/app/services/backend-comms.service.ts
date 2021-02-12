@@ -75,6 +75,22 @@ export class BackendCommsService {
       });
   }
 
+  turnLightsOff(Session: string, LightID: number = null): void{
+    this.http.post(
+      this.backendUrl + '/hue-lightsOff',
+      {
+        session: Session,
+        lightID: LightID
+      }
+    ).toPromise()
+      .then(data => {
+        console.log(data);
+      })
+      .catch(err => {
+        console.log(err);
+      });
+  }
+
   async getLights(Session: string): Promise<{id: number, name: string, reachable: boolean, active: boolean}[]> {
     return this.http.get(
       this.backendUrl + '/hue-getLights' + '?session=' + Session

@@ -10,3 +10,20 @@
 .light-box p {
   font-size: 1.1em;
 }
+
+.light-box button img {
+  height: 1.5em;
+  margin: 0.25em;
+}
+
+.light-box button:nth-child(odd){
+  border-radius: 0.375em 0 0 0.375em;
+}
+
+.light-box button:nth-child(even){
+  border-radius: 0 0.375em 0.375em 0;
+}
+
+.disabled-light-box p {
+  color: darkgrey;
+}

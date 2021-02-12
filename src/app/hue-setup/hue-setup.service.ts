@@ -53,6 +53,9 @@ export class HueSetupService {
       .catch(err => {
         return Promise.reject(err);
       });
+  }
 
+  turnLightOff(lightID: number): void {
+    this.backendService.turnLightsOff(session.get(), lightID);
   }
 }
