@@ -1,0 +1,12 @@
+.light-box {
+  text-align: center;
+}
+
+.light-box img {
+  height: 6.5em;
+  margin: 0.75em;
+}
+
+.light-box p {
+  font-size: 1.1em;
+}

@@ -1,0 +1,37 @@
+<p>hue-setup works!</p>
+
+
+<div *ngIf="sessionActive">
+  <p>session active</p>
+
+  <div class="row">
+    <div class="light-box col-4" *ngFor="let light of lights">
+      <div *ngIf="light.reachable">
+        <img *ngIf="light.active" src="assets/bulbOn.svg" (click)="activateLight(light.id, false)">
+        <img *ngIf="!light.active" src="assets/bulbOff.svg" (click)="activateLight(light.id, true)">
+      </div>
+      <div *ngIf="!light.reachable">
+        <img src="assets/bulbUnreachable.svg">
+      </div>
+      <p>{{light.name}}</p>
+      <button class="btn btn-dark" (click)="pingLight(light.id)">Ping Light</button>
+    </div>
+  </div>
+
+  <button class="btn btn-danger" [disabled]="!lightsChanged" (click)="saveLightSelection()" >Save</button>
+
+  <p>{{lightsHash}}</p>
+
+</div>
+
+<div *ngIf="!sessionActive">
+  <div class="container" >
+    <div class="col-12" style="height: 30em">
+      <p class="text-muted p-3" style="text-align: center;">
+        You'll have to
+        <a href="http://localhost:3000/hue/api/hue-login" target="_blank" rel="">login </a>
+        with your Philips Hue account to access this page :)
+      </p>
+    </div>
+  </div>
+</div>

@@ -4,7 +4,9 @@
     <title>{{ title }}</title>
   </head>
   <body>
-    <p class="text-muted px-3 py-2" style="float: right">
+  <button class="btn btn-primary" routerLink="hue-setup">Hue Setup</button>
+
+  <p class="text-muted px-3 py-2" style="float: right">
       Session:
       <span *ngIf="sessionActive">{{sessionValue}}</span>
       <span *ngIf="!sessionValue">
