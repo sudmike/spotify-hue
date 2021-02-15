@@ -1,8 +1,7 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { HueSetupService } from './hue-setup.service';
-import { Light } from '../shared/light.model';
+import { Light } from '../../shared/light.model';
 import * as hash from 'object-hash';
-// import { sha1 } from '@angular/compiler/src/i18n/digest';
 
 @Component({
   selector: 'app-hue-setup',

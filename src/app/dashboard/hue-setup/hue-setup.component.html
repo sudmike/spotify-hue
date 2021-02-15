@@ -1,11 +1,6 @@
-<p>hue-setup works!</p>
-
-
 <div *ngIf="sessionActive">
-  <p>session active</p>
-
-  <div class="row">
-    <div [className]="(light.reachable) ? 'light-box col-4' : 'light-box col-4 disabled-light-box'" *ngFor="let light of lights">
+  <div class="row grid-container" >
+    <div [className]="(light.reachable) ? 'light-box' : 'light-box disabled-light-box'" *ngFor="let light of lights">
       <div *ngIf="light.reachable">
         <img *ngIf="light.active" src="assets/bulbOn.svg" (click)="activateLight(light.id, false)">
         <img *ngIf="!light.active" src="assets/bulbOff.svg" (click)="activateLight(light.id, true)">
@@ -28,7 +23,7 @@
 </div>
 
 <div *ngIf="!sessionActive">
-  <div class="container" >
+  <div class="container py-4" >
     <div class="col-12" style="height: 30em">
       <p class="text-muted p-3" style="text-align: center;">
         You'll have to

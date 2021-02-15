@@ -1,9 +1,9 @@
 import { Injectable } from '@angular/core';
-import { SessionService } from '../services/session.service';
+import { SessionService } from '../../services/session.service';
 import { Observable } from 'rxjs';
-import { Light } from '../shared/light.model';
-import { BackendCommsService } from '../services/backend-comms.service';
-import { session } from '../shared/session.model';
+import { Light } from '../../shared/light.model';
+import { BackendCommsService } from '../../services/backend-comms.service';
+import { session } from '../../shared/session.model';
 
 @Injectable({
   providedIn: 'root'
