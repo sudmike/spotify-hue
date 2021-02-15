@@ -3,18 +3,19 @@ import { Track } from '../shared/track.model';
 import { BackendCommsService } from '../services/backend-comms.service';
 import { SpotifyWebService } from '../services/spotify-web.service';
 import { Observable, Subscriber, Subscription } from 'rxjs';
+import { session } from '../shared/session.model';
 
 @Injectable({
   providedIn: 'root'
 })
 
-export class DashboardSupportService {
+export class DashboardService {
 
   current: Track;
   intervalSubscription: Subscription;
 
 
-  constructor(private backendComms: BackendCommsService,
+  constructor(private backendService: BackendCommsService,
               private spotifyService: SpotifyWebService) {
   }
 
@@ -44,7 +45,7 @@ export class DashboardSupportService {
               }
             }
             else { // different Track -> inform subscribers and get the color
-              this.backendComms.getColorOfImg(data.track.imagePath[1])
+              this.backendService.getColorOfImg(data.track.imagePath[1])
                 .then(colors => {
                   data.track.imageHsl = colors.hsl;
                   data.track.imageRgb = colors.rgb;
@@ -111,11 +112,17 @@ export class DashboardSupportService {
 
   setLights(hsl: number[], brightness: number = 1.0): void {
 
-    this.backendComms.setLights([
-      Math.floor(this.map(hsl[0], 0, 1, 0, 360)),
-      Math.floor(this.map(hsl[1], 0, 1, 0, 100)),
-      Math.floor(this.map(hsl[2], 0, 1, 0, 100))
-    ], brightness);
+    if (session.active()){
+      this.backendService.setLights([
+        Math.floor(this.map(hsl[0], 0, 1, 0, 360)),
+        Math.floor(this.map(hsl[1], 0, 1, 0, 100)),
+        Math.floor(this.map(hsl[2], 0, 1, 0, 100))
+      ], brightness, session.get());
+    }
+    else { // no session yet
+      console.log('No Session has been set for hue yet! (work in progress)');
+      // ...
+    }
   }
 
   map(value: number, x1: number, y1: number, x2: number, y2: number): number {

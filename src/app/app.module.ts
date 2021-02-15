@@ -10,6 +10,9 @@ import { DashboardComponent } from './dashboard/dashboard.component';
 import { LoginComponent } from './login/login.component';
 import { HomeComponent } from './home/home.component';
 import { CallbackComponent } from './login/callback/callback.component';
+import { HueSetupComponent } from './dashboard/hue-setup/hue-setup.component';
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+import { MatSidenavModule } from '@angular/material/sidenav';
 
 /* Define Routes */
 const appRoutes: Routes = [
@@ -17,6 +20,7 @@ const appRoutes: Routes = [
   { path: 'login', component: LoginComponent },
   { path: 'login/callback', component: CallbackComponent },
   { path: 'dashboard', component: DashboardComponent },
+  { path: 'hue-setup', component: HueSetupComponent }
 ];
 
 
@@ -26,14 +30,17 @@ const appRoutes: Routes = [
     DashboardComponent,
     LoginComponent,
     HomeComponent,
-    CallbackComponent
+    CallbackComponent,
+    HueSetupComponent,
   ],
-    imports: [
-        BrowserModule,
-        FormsModule,
-        RouterModule.forRoot(appRoutes),
-        HttpClientModule
-    ],
+  imports: [
+    BrowserModule,
+    FormsModule,
+    RouterModule.forRoot(appRoutes),
+    HttpClientModule,
+    BrowserAnimationsModule,
+    MatSidenavModule,
+  ],
   providers: [],
   bootstrap: [AppComponent]
 })

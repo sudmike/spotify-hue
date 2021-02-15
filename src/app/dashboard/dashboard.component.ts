@@ -1,5 +1,5 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
-import { DashboardSupportService } from './dashboard-support.service';
+import { DashboardService } from './dashboard.service';
 import { Track } from '../shared/track.model';
 import { Subscription } from 'rxjs';
 
@@ -12,19 +12,23 @@ import { Subscription } from 'rxjs';
 export class DashboardComponent implements OnInit, OnDestroy {
 
   brightnessRange = 1.0;
+  activePolling = false;
 
   currentTrack = new Track();
   cardBackgroundColor: string;
   trackUpdateSubscription: Subscription;
 
-  constructor(private support: DashboardSupportService) {
-  }
+  constructor(private support: DashboardService) { }
 
   ngOnInit(): void {
     this.support.ngOnInitCustom();
+    this.trackSongs();
+  }
 
+  trackSongs(): void {
     this.trackUpdateSubscription = this.support.beginCheckingCurrentTrack() // receive event every time the song changes/is paused
       .subscribe(data => { // colors
+        this.activePolling = true;
         console.log('change detected', data.name, data.playing);
         this.currentTrack = data;
         if (data.imageRgb){ // if rgb is provided, change color behind image
@@ -35,9 +39,11 @@ export class DashboardComponent implements OnInit, OnDestroy {
             this.support.setLights(data.imageHsl, this.brightnessRange);
           }
         }
-      }, (err => {
+      }, err => {
         console.log('Subscription returns Error: ', err.message);
-      }));
+        this.activePolling = false;
+      });
+
   }
 
   onBrightnessChange(): void {

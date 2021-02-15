@@ -1,15 +1,20 @@
 <html>
-<head>
-  <meta http-equiv="Content-Type" content="text/html; charset=windows-1252">
-  <title>{{ title }}</title>
-</head>
-<body>
-  <h1>Welcome to {{ title }}!</h1>
-  <a href="http://localhost:3000/hue/api/hue-login/debug" target="_blank" rel="noopener noreferrer">Debug Backend initialisation</a>
-  <br>
-  <button class="btn btn-primary" (click)="tempRefresh()">Debug Refresh Token</button>
-  <button class="btn btn-primary" routerLink="dashboard">Dashboard</button>
-  <hr>
-  <router-outlet></router-outlet>
-</body>
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=windows-1252">
+    <title>{{ title }}</title>
+  </head>
+  <body>
+  <button class="btn btn-primary" routerLink="hue-setup">Hue Setup</button>
+
+  <p class="text-muted px-3 py-2" style="float: right">
+      Session:
+      <span *ngIf="sessionActive">{{sessionValue}}</span>
+      <span *ngIf="!sessionValue">
+        <a href="http://localhost:3000/hue/api/hue-login" target="_blank" rel="">initialize Hue</a>
+      </span>
+    </p>
+    <br>
+    <hr>
+    <router-outlet></router-outlet>
+  </body>
 </html>

@@ -1,22 +1,40 @@
 <script src="dashboard.component.ts"></script>
-<div class="container-fluid">
-  <div class="row justify-content-center">
-    <div class="col-5 align-self-center text-right px-5">
-      <h2 style="font-size:2.5vw;">{{currentTrack.name}}</h2>
-      <p class="text-muted" style="font-size:1.5vw;">
+
+<mat-sidenav-container hasBackdrop="false" (backdropClick)="sidebar.close()">
+  <mat-sidenav-content>
+    <button class="mt-2 mr-2 btn-fab float-right" (click)="sidebar.open()" [style.background-color]="cardBackgroundColor"><img src="assets/bulb.svg"></button>
+    <div class="container-fluid">
+      <div class="row justify-content-center">
+        <div class="col-5 px-5 align-self-center">
+          <div class="col-12 text-right">
+            <h2 style="font-size:2.5vw;">{{currentTrack.name}}</h2>
+            <p class="text-muted" style="font-size:1.5vw;">
         <span *ngFor="let artist of currentTrack.artists; let lastArtist = last">
           {{artist}}{{lastArtist ? '' : ', '}}
         </span>
-      </p>
-    </div>
-    <div class="col-4 px-5">
-      <img class="col-12 rounded" src="{{currentTrack.imagePath[0]}}" [style.background-color]="cardBackgroundColor" style="padding: 2.5vw" >
-      <div class="range-container mt-3">
-        <img src="../../assets/moon.svg" style="width: 1.5em">
-        <input type="range" class="custom-range" min="0.01" max="1.0" step="any" [(ngModel)]="brightnessRange" (click)="onBrightnessChange()">
-        <img src="../../assets/sun.svg" style="width: 1.85em">
+            </p>
+          </div>
+          <div class="col-12" *ngIf="!this.activePolling">
+            <button class="btn btn-primary w-100 p-4" (click)="trackSongs()">Activate Tracking</button>
+          </div>
+        </div>
+        <div class="col-4 px-5">
+          <img class="col-12 rounded" src="{{currentTrack.imagePath[0]}}" [style.background-color]="cardBackgroundColor" style="padding: 2.5vw" >
+          <div class="range-container mt-3">
+            <img src="../../assets/moon.svg" style="width: 1.5em">
+            <input type="range" class="custom-range" min="0.01" max="1.0" step="any" [(ngModel)]="brightnessRange" (click)="onBrightnessChange()">
+            <img src="../../assets/sun.svg" style="width: 1.85em">
+          </div>
+        </div>
+        <div class="col-1"></div>
       </div>
     </div>
-    <div class="col-1"></div>
-  </div>
-</div>
+  </mat-sidenav-content>
+
+  <mat-sidenav mode="over" position="end" fixedInViewport="true" fixedBottomGap="0px" #sidebar>
+    <button class="btn-fab cancel" (click)="sidebar.close()"><img src="assets/left-arrow.svg"></button>
+    <app-hue-setup></app-hue-setup>
+  </mat-sidenav>
+
+</mat-sidenav-container>
+

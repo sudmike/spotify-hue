@@ -1,0 +1,35 @@
+<div *ngIf="sessionActive">
+  <div class="row grid-container" >
+    <div [className]="(light.reachable) ? 'light-box' : 'light-box disabled-light-box'" *ngFor="let light of lights">
+      <div *ngIf="light.reachable">
+        <img *ngIf="light.active" src="assets/bulbOn.svg" (click)="activateLight(light.id, false)">
+        <img *ngIf="!light.active" src="assets/bulbOff.svg" (click)="activateLight(light.id, true)">
+      </div>
+      <div *ngIf="!light.reachable">
+        <img src="assets/bulbUnreachable.svg">
+      </div>
+      <p>{{light.name}}</p>
+      <button class="btn btn-dark" [disabled]="!light.reachable" (click)="pingLight(light.id)" title="Ping">
+        <img src="assets/ping.svg">
+      </button>
+      <button class="btn btn-dark" [disabled]="!light.reachable" (click)="turnLightOff(light.id)" title="Turn Off">
+        <img src="assets/turn-off.svg">
+      </button>
+    </div>
+  </div>
+
+  <button class="btn btn-danger" [disabled]="!lightsChanged" (click)="saveLightSelection()" >Save</button>
+
+</div>
+
+<div *ngIf="!sessionActive">
+  <div class="container py-4" >
+    <div class="col-12" style="height: 30em">
+      <p class="text-muted p-3" style="text-align: center;">
+        You'll have to
+        <a href="http://localhost:3000/hue/api/hue-login" target="_blank" rel="">login </a>
+        with your Philips Hue account to access this page :)
+      </p>
+    </div>
+  </div>
+</div>
