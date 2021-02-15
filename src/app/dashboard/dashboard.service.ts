@@ -130,7 +130,17 @@ export class DashboardService {
     }
   }
 
-  map(value: number, x1: number, y1: number, x2: number, y2: number): number {
+  turnLightsOff(): void {
+    if (session.active()){
+      this.backendService.turnLightsOff(session.get());
+    }
+    else { // no session yet
+        console.log('No Session has been set for hue yet! (work in progress)');
+        // ...
+      }
+    }
+
+  private map(value: number, x1: number, y1: number, x2: number, y2: number): number {
     return (value - x1) * (y2 - x2) / (y1 - x1) + x2;
   }
 

@@ -27,20 +27,22 @@ export class DashboardComponent implements OnInit, OnDestroy {
 
   trackSongs(): void {
     this.trackUpdateSubscription = this.support.beginCheckingCurrentTrack() // receive event every time the song changes/is paused
-      .subscribe(data => { // colors
+      .subscribe(track => {
         this.activePolling = true;
-        console.log('change detected', data.name, data.playing);
-        this.currentTrack = data;
-        if (data.imageRgb){ // if rgb is provided, change color behind image
-          this.setImageBackground(data.imageRgb);
+        console.log('change detected', track.name, track.playing);
+        this.currentTrack = track;
+        if (track.imageRgb){ // if rgb is provided, change color behind image
+          this.setImageBackground(track.imageRgb);
 
-          if (data.imageHsl){ // if hsl is also provided, set color of philips hues
-            console.log(data.imageHsl);
-            this.support.setLights(data.imageHsl, this.brightnessRange);
+          if (track.imageHsl){ // if hsl is also provided, set color of philips hues
+            (track.playing)
+              ? this.support.setLights(track.imageHsl, this.brightnessRange)
+              : this.support.setLights(track.imageHsl, this.brightnessRange / 2);
           }
         }
       }, err => {
         console.log('Subscription returns Error: ', err.message);
+        this.support.turnLightsOff();
         this.activePolling = false;
       });
 
@@ -48,14 +50,16 @@ export class DashboardComponent implements OnInit, OnDestroy {
 
   onBrightnessChange(): void {
     if (this.currentTrack && this.currentTrack.imageHsl){
-      this.support.setLights(this.currentTrack.imageHsl, this.brightnessRange);
+      (this.currentTrack.playing)
+        ? this.support.setLights(this.currentTrack.imageHsl, this.brightnessRange)
+        : this.support.setLights(this.currentTrack.imageHsl, this.brightnessRange / 2);
     }
     else{
       console.log('Could not act on brightness change because there is no current track!');
     }
   }
 
-  setImageBackground(rgb: number[]): void{
+  setImageBackground(rgb: number[]): void {
 
     // check for valid numbers
     if (rgb[0] === undefined || rgb[1] === undefined || rgb[2] === undefined ||
@@ -83,7 +87,6 @@ export class DashboardComponent implements OnInit, OnDestroy {
 
   ngOnDestroy(): void {
     this.support.ngOnDestroyCustom();
-
     this.trackUpdateSubscription.unsubscribe();
   }
 
