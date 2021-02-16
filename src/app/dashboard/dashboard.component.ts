@@ -35,9 +35,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
           this.setImageBackground(track.imageRgb);
 
           if (track.imageHsl){ // if hsl is also provided, set color of philips hues
-            (track.playing)
-              ? this.support.setLights(track.imageHsl, this.brightnessRange)
-              : this.support.setLights(track.imageHsl, this.brightnessRange / 2);
+            this.setLights();
           }
         }
       }, err => {
@@ -50,9 +48,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
 
   onBrightnessChange(): void {
     if (this.currentTrack && this.currentTrack.imageHsl){
-      (this.currentTrack.playing)
-        ? this.support.setLights(this.currentTrack.imageHsl, this.brightnessRange)
-        : this.support.setLights(this.currentTrack.imageHsl, this.brightnessRange / 2);
+      this.setLights();
     }
     else{
       console.log('Could not act on brightness change because there is no current track!');
@@ -82,6 +78,17 @@ export class DashboardComponent implements OnInit, OnDestroy {
         rgb[2] = Math.round(rgb[2]);
         this.cardBackgroundColor = this.support.rgbToHex(rgb);
       }
+    }
+  }
+
+  setLights(): void {
+    if (this.currentTrack){
+      (this.currentTrack.playing)
+        ? this.support.setLights(this.currentTrack.imageHsl, this.brightnessRange)
+        : this.support.setLights(this.currentTrack.imageHsl, this.brightnessRange / 2);
+    }
+    else {
+      console.log('Could not set lights from dashboard because there is no track');
     }
   }
 

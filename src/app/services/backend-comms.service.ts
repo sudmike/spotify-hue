@@ -75,7 +75,7 @@ export class BackendCommsService {
       });
   }
 
-  turnLightsOff(Session: string, LightID: number = null): void{
+  turnLightsOff(Session: string, LightID: number[] = null): void{
     this.http.post(
       this.backendUrl + '/hue-lightsOff',
       {

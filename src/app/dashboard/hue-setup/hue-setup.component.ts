@@ -2,6 +2,7 @@ import { Component, OnInit, OnDestroy } from '@angular/core';
 import { HueSetupService } from './hue-setup.service';
 import { Light } from '../../shared/light.model';
 import * as hash from 'object-hash';
+import { DashboardService } from '../dashboard.service';
 
 @Component({
   selector: 'app-hue-setup',
@@ -16,8 +17,10 @@ export class HueSetupComponent implements OnInit, OnDestroy {
   lightsHash: any;
 
   lights: Light[];
+  activeLightIDsBefore: number[];
 
-  constructor(private support: HueSetupService) { }
+  constructor(private support: HueSetupService,
+              private dashboardService: DashboardService) { }
 
   ngOnInit(): void {
     this.support.ngOnInitCustom();
@@ -28,6 +31,7 @@ export class HueSetupComponent implements OnInit, OnDestroy {
 
       this.support.getLights()
         .then(data => {
+          this.activeLightIDsBefore = data.filter(l => l.active).map(l => l.id);
           this.lights = data;
           this.lightsHash = hash(JSON.stringify(this.lights));
           this.lightsChanged = false;
@@ -48,6 +52,16 @@ export class HueSetupComponent implements OnInit, OnDestroy {
         console.log('changed active lights');
         // ... show that request succeeded (checkmark or something)
 
+        // set all lights that were added
+        this.dashboardService.resetLights();
+
+        // turn off all lights that were deactivated
+        this.support.turnLightOff(
+          this.activeLightIDsBefore.filter(l => this.lights.filter(l3 => !l3.active).map(l2 => l2.id).includes(l))
+        );
+
+        // reconfigure variables
+        this.activeLightIDsBefore = this.lights.filter(l => l.active).map(l => l.id);
         this.lightsHash = hash(JSON.stringify(this.lights));
         this.lightsChanged = false;
       })
@@ -75,8 +89,7 @@ export class HueSetupComponent implements OnInit, OnDestroy {
   }
 
   turnLightOff(lightID: number): void {
-    this.support.turnLightOff(lightID);
+    this.support.turnLightOff([lightID]);
   }
-
 
 }

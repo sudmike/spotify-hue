@@ -15,6 +15,8 @@ export class DashboardService {
   intervalSubscription: Subscription;
   linearBackoff = 400; // time to wait past song switch to ensure a valid response
 
+  cachedBrightness: number; // very ugly coding ... resolve through cookies (?)
+
   constructor(private backendService: BackendCommsService,
               private spotifyService: SpotifyWebService) {
   }
@@ -116,7 +118,7 @@ export class DashboardService {
   }
 
   setLights(hsl: number[], brightness: number = 1.0): void {
-
+    this.cachedBrightness = brightness;
     if (session.active()){
       this.backendService.setLights([
         Math.floor(this.map(hsl[0], 0, 1, 0, 360)),
@@ -142,6 +144,18 @@ export class DashboardService {
 
   private map(value: number, x1: number, y1: number, x2: number, y2: number): number {
     return (value - x1) * (y2 - x2) / (y1 - x1) + x2;
+  }
+
+  resetLights(): void {
+    if ((this.current && this.current.imageHsl) && this.cachedBrightness){
+      this.setLights(
+        this.current.imageHsl,
+        this.cachedBrightness
+      );
+    }
+    else {
+      console.log('Could not reset lights based on cached data');
+    }
   }
 
   ngOnInitCustom(): void {
