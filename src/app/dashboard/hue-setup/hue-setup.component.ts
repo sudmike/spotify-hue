@@ -92,4 +92,8 @@ export class HueSetupComponent implements OnInit, OnDestroy {
     this.support.turnLightOff([lightID]);
   }
 
+  onOpenHueLogin(): void {
+    window.open('http://localhost:3000/hue/api/hue-login', 'Hue Login', 'width=1200, height=700');
+  }
+
 }
