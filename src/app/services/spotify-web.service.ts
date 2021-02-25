@@ -72,4 +72,68 @@ export class SpotifyWebService {
           : Promise.reject(Error('Could not refresh access token'));
       });
   }
+
+  async navigateToConsentForm(): Promise<void> {
+    // static parameters
+    const clientId = '954319b997ba428fad69349169e417d2';
+    const redirectUri = 'http://localhost:4200/login/callback';
+    const scope = 'user-read-playback-state';
+
+    // generated parameters
+    const verifier = this.generateRandomString(128);
+    const challenge = this.base64url( await this.sha256(verifier) );
+    const state = this.generateRandomString(64);
+
+    // write away parameters needed for token endpoint
+    sessionStorage.setItem('state', state);
+    sessionStorage.setItem('verifier', verifier);
+
+    console.log('Verifier: ', verifier);
+    console.log('Challenge: ', challenge);
+    console.log('State: ', state);
+
+    // navigate to spotify consent form
+    window.location.href =
+      'https://accounts.spotify.com/authorize' + '?' +
+      'client_id=' + clientId + '&' +
+      'response_type=code' + '&' +
+      'redirect_uri=' + redirectUri + '&' +
+      'code_challenge_method=S256' + '&' +
+      'code_challenge=' + challenge + '&' +
+      'state=' + state + '&' +
+      'scope=' + scope;
+  }
+
+  // useful for creation of authorization state and verifier
+  private generateRandomString(num: number): string {
+    let text = '';
+    const possible = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+
+    for (let i = 0; i < num; i++) {
+      text += possible.charAt(Math.floor(Math.random() * possible.length));
+    }
+    return text;
+  }
+
+  private async sha256(message: string): Promise<string> {
+    // encode as UTF-8
+    const msgBuffer = new TextEncoder().encode(message);
+
+    // hash the message
+    const hashBuffer = await crypto.subtle.digest('SHA-256', msgBuffer);
+
+    // convert ArrayBuffer to Array
+    const hashArray = Array.from(new Uint8Array(hashBuffer));
+
+    // convert bytes to hex string
+    const hashHex = hashArray.map(b => ('00' + b.toString(16)).slice(-2)).join('');
+    return hashHex;
+  }
+
+  private base64url(message: string): string {
+    return btoa(message);
+  }
+
 }
+
+
