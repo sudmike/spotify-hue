@@ -29,21 +29,26 @@ export class HueSetupComponent implements OnInit, OnDestroy {
     this.support.listenToSession().subscribe(() => {
       this.sessionActive = true;
 
-      this.support.getLights()
-        .then(data => {
-          this.activeLightIDsBefore = data.filter(l => l.active).map(l => l.id);
-          this.lights = data;
-          this.lightsHash = hash(JSON.stringify(this.lights));
-          this.lightsChanged = false;
-        })
-        .catch(() => {
-          // ... what should happen if lights can't be retrieved
-        });
+      this.getLights();
     });
   }
 
   ngOnDestroy(): void {
     this.support.ngOnDestroyCustom();
+  }
+
+  getLights(): void {
+    this.support.getLights()
+      .then(data => {
+        this.activeLightIDsBefore = data.filter(l => l.active).map(l => l.id);
+        this.lights = data;
+        this.lightsHash = hash(JSON.stringify(this.lights));
+        this.lightsChanged = false;
+      })
+      .catch(() => {
+        // ... what should happen if lights can't be retrieved
+      });
+
   }
 
   saveLightSelection(): void {

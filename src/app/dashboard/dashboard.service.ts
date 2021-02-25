@@ -91,8 +91,8 @@ export class DashboardService {
     else {
       if (calcParams.remaining_ms < defaultPeriod) { // close to end of song
         if (calcParams.remaining_ms <= 0){ // edge case
-          console.log('Negative', calcParams.remaining_ms);
-          this.linearBackoff += 25;
+          console.log('Negative', calcParams.remaining_ms + this.linearBackoff);
+          this.linearBackoff += 125;
           return 1000; // timeout punishment
         }
         else {

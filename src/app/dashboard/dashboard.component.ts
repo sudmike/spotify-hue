@@ -11,7 +11,7 @@ import { Subscription } from 'rxjs';
 
 export class DashboardComponent implements OnInit, OnDestroy {
 
-  brightnessRange = 1.0;
+  brightnessRange = (new Date().getHours() < 9 || new Date().getHours() > 21) ? 0.6 : 1.0;
   activePolling = false;
 
   currentTrack = new Track();
