@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import SpotifyWebApi from 'spotify-web-api-js';
 import { BackendCommsService } from './backend-comms.service';
 import { Track } from '../shared/track.model';
+import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
 
 @Injectable({
   providedIn: 'root'
@@ -9,10 +10,17 @@ import { Track } from '../shared/track.model';
 
 export class SpotifyWebService {
 
+  // static parameters
+  private clientId = '954319b997ba428fad69349169e417d2';
+  private redirectUri = 'http://localhost:4200/login/callback';
+  private scope = 'user-read-playback-state';
+
   private spotifyApi = new SpotifyWebApi();
   private spotifyTokenTime: number;
+  private refreshToken: string;
 
-  constructor( private backendService: BackendCommsService) { }
+  constructor( private backendService: BackendCommsService,
+               private http: HttpClient) { }
 
   setAccessToken(accessToken: string): void {
     this.spotifyApi.setAccessToken(accessToken);
@@ -73,35 +81,70 @@ export class SpotifyWebService {
       });
   }
 
-  async navigateToConsentForm(): Promise<void> {
-    // static parameters
-    const clientId = '954319b997ba428fad69349169e417d2';
-    const redirectUri = 'http://localhost:4200/login/callback';
-    const scope = 'user-read-playback-state';
-
+  async authorizationRequest(): Promise<void> {
     // generated parameters
     const verifier = this.generateRandomString(128);
-    const challenge = this.base64url( await this.sha256(verifier) );
+    const challenge = await this.generateChallenge(verifier);
     const state = this.generateRandomString(64);
 
     // write away parameters needed for token endpoint
-    sessionStorage.setItem('state', state);
-    sessionStorage.setItem('verifier', verifier);
-
-    console.log('Verifier: ', verifier);
-    console.log('Challenge: ', challenge);
-    console.log('State: ', state);
+    localStorage.setItem('state', state);
+    localStorage.setItem('verifier', verifier);
 
     // navigate to spotify consent form
     window.location.href =
       'https://accounts.spotify.com/authorize' + '?' +
-      'client_id=' + clientId + '&' +
+      'client_id=' + this.clientId + '&' +
       'response_type=code' + '&' +
-      'redirect_uri=' + redirectUri + '&' +
+      'redirect_uri=' + this.redirectUri + '&' +
       'code_challenge_method=S256' + '&' +
       'code_challenge=' + challenge + '&' +
       'state=' + state + '&' +
-      'scope=' + scope;
+      'scope=' + this.scope;
+  }
+
+  async accessTokenRequest(authorizationCode: string): Promise<void> {
+    if (!localStorage.getItem('verifier')){ // no verifier in local storage
+      return Promise.reject();
+    }
+    else {
+      const verifier = localStorage.getItem('verifier');
+      localStorage.removeItem('verifier');
+
+      return this.http.post( // request to spotify's token endpoint
+        'https://accounts.spotify.com/api/token',
+        new HttpParams()
+          .set('client_id', this.clientId)
+          .set('code_verifier', verifier)
+          .set('grant_type', 'authorization_code')
+          .set('code', authorizationCode)
+          .set('redirect_uri', this.redirectUri)
+          .toString(),
+        {
+          headers: new HttpHeaders().set('Content-Type', 'application/x-www-form-urlencoded')
+        }
+      ).toPromise()
+        .then(
+          (res:
+             {
+               access_token: string,
+               expires_in: number,
+               refresh_token: string,
+               scope: string,
+               token_type: string
+             }
+          ) => {
+            console.log('d', res);
+            this.setAccessToken(res.access_token);
+            this.refreshToken = res.refresh_token;
+            return Promise.resolve();
+        })
+        .catch(e => {
+          console.log('e', e);
+          return Promise.reject();
+        });
+    }
+
   }
 
   // useful for creation of authorization state and verifier
@@ -115,23 +158,14 @@ export class SpotifyWebService {
     return text;
   }
 
-  private async sha256(message: string): Promise<string> {
-    // encode as UTF-8
-    const msgBuffer = new TextEncoder().encode(message);
+  private async generateChallenge(verifier): Promise<string> {
 
-    // hash the message
-    const hashBuffer = await crypto.subtle.digest('SHA-256', msgBuffer);
+    const encodedVerifier = new TextEncoder().encode(verifier);
+    const hashedVerifier = await window.crypto.subtle.digest('SHA-256', encodedVerifier);
 
-    // convert ArrayBuffer to Array
-    const hashArray = Array.from(new Uint8Array(hashBuffer));
+    return btoa(String.fromCharCode.apply(null, new Uint8Array(hashedVerifier)))
+      .replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
 
-    // convert bytes to hex string
-    const hashHex = hashArray.map(b => ('00' + b.toString(16)).slice(-2)).join('');
-    return hashHex;
-  }
-
-  private base64url(message: string): string {
-    return btoa(message);
   }
 
 }
