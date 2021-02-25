@@ -67,15 +67,17 @@ export class BackendCommsService {
         session: Session
       }
     ).toPromise()
-      .then(data => {
-        console.log(data);
+      .then((data: any) => {
+        if (data.status !== 'success'){
+          console.log(data);
+        }
       })
       .catch(err => {
         console.log(err);
       });
   }
 
-  turnLightsOff(Session: string, LightID: number = null): void{
+  turnLightsOff(Session: string, LightID: number[] = null): void{
     this.http.post(
       this.backendUrl + '/hue-lightsOff',
       {
@@ -83,8 +85,10 @@ export class BackendCommsService {
         lightID: LightID
       }
     ).toPromise()
-      .then(data => {
-        console.log(data);
+      .then((data: any) => {
+        if (data.status !== 'success') {
+          console.log(data);
+        }
       })
       .catch(err => {
         console.log(err);
@@ -99,12 +103,12 @@ export class BackendCommsService {
     {status: string, data: {lights: {name: string, id: number, reachable: boolean, active: boolean}[]}} |
     {status: string, message: string}
   ) => {
-        console.log(res);
 
         if (res.status === 'success'){
           return (res as {status: string, data: {lights: {name: string, id: number, reachable: boolean, active: boolean}[]}}).data.lights;
         }
         else {
+          console.log(res);
           return Promise.reject('Could not get Lights from backend.' + (res as {status: string, message: string}).message);
         }
       })

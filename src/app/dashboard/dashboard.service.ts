@@ -13,7 +13,9 @@ export class DashboardService {
 
   current: Track;
   intervalSubscription: Subscription;
+  linearBackoff = 400; // time to wait past song switch to ensure a valid response
 
+  cachedBrightness: number; // very ugly coding ... resolve through cookies (?)
 
   constructor(private backendService: BackendCommsService,
               private spotifyService: SpotifyWebService) {
@@ -24,15 +26,15 @@ export class DashboardService {
 
     return new Observable<Track>(subscriber => {
 
-      let intervalSubscriber: Subscriber<{remaining_ms: number}>;
+      let intervalSubscriber: Subscriber<{remaining_ms: number, playing: boolean}>;
 
       this.intervalSubscription = this.customInterval(
         10000,
-        new Observable<{remaining_ms: number}>(sub => { intervalSubscriber = sub; })
+        new Observable<{remaining_ms: number, playing: boolean}>(sub => { intervalSubscriber = sub; })
       ).subscribe(() => {
         this.spotifyService.getCurrentTrack()
           .then(data => {
-            intervalSubscriber.next({remaining_ms: data.remaining_ms}); // inform interval with time-calculation-parameters
+            intervalSubscriber.next({remaining_ms: data.remaining_ms, playing: data.track.playing}); // inform interval
             if (this.current !== undefined && data.track.id === this.current.id) { // same Track
               if (data.track.playing === this.current.playing) { // same playstate -> no changes
                 // do nothing
@@ -68,12 +70,11 @@ export class DashboardService {
     });
   }
 
-  private customInterval(basePeriod: number, observable: Observable<{remaining_ms: number}>): Observable<void> {
+  private customInterval(basePeriod: number, observable: Observable<{remaining_ms: number, playing: boolean}>): Observable<void> {
     return new Observable<void>(subscriber => {
       subscriber.next(); // kickoff
 
       observable.subscribe(next => { // gets called when spotify responds, 'next' contains song information to calculate intervaltime
-        // console.log('custom Interval called', next);
         setTimeout(() => {subscriber.next(); }, this.calculateIntervalTime(basePeriod, next));
       }, () => {
         subscriber.error(); // maybe redundant because subscriber unsubscribes when sending error anyway
@@ -82,19 +83,25 @@ export class DashboardService {
     });
   }
 
-  private calculateIntervalTime(defaultPeriod: number, calcParams: {remaining_ms: number}): number {
+  private calculateIntervalTime(defaultPeriod: number, calcParams: {remaining_ms: number, playing: boolean}): number {
 
-    if (calcParams.remaining_ms < defaultPeriod) { // close to end of song
-      if (calcParams.remaining_ms <= 0){ // edge case
-        console.log('Negative', calcParams.remaining_ms);
-        return 1000; // timeout punishment
-      }
-      else {
-        return calcParams.remaining_ms + 400; // + 400 because of delay between songs
-      }
+    if (!calcParams.playing){ // return max wait time if song is paused
+      return defaultPeriod;
     }
     else {
-      return defaultPeriod;
+      if (calcParams.remaining_ms < defaultPeriod) { // close to end of song
+        if (calcParams.remaining_ms <= 0){ // edge case
+          console.log('Negative', calcParams.remaining_ms + this.linearBackoff);
+          this.linearBackoff += 125;
+          return 1000; // timeout punishment
+        }
+        else {
+          return calcParams.remaining_ms + this.linearBackoff; // + delay between songs
+        }
+      }
+      else {
+        return defaultPeriod;
+      }
     }
   }
 
@@ -111,7 +118,7 @@ export class DashboardService {
   }
 
   setLights(hsl: number[], brightness: number = 1.0): void {
-
+    this.cachedBrightness = brightness;
     if (session.active()){
       this.backendService.setLights([
         Math.floor(this.map(hsl[0], 0, 1, 0, 360)),
@@ -125,8 +132,30 @@ export class DashboardService {
     }
   }
 
-  map(value: number, x1: number, y1: number, x2: number, y2: number): number {
+  turnLightsOff(): void {
+    if (session.active()){
+      this.backendService.turnLightsOff(session.get());
+    }
+    else { // no session yet
+        console.log('No Session has been set for hue yet! (work in progress)');
+        // ...
+      }
+    }
+
+  private map(value: number, x1: number, y1: number, x2: number, y2: number): number {
     return (value - x1) * (y2 - x2) / (y1 - x1) + x2;
+  }
+
+  resetLights(): void {
+    if ((this.current && this.current.imageHsl) && this.cachedBrightness){
+      this.setLights(
+        this.current.imageHsl,
+        this.cachedBrightness
+      );
+    }
+    else {
+      console.log('Could not reset lights based on cached data');
+    }
   }
 
   ngOnInitCustom(): void {

@@ -55,7 +55,8 @@ export class HueSetupService {
       });
   }
 
-  turnLightOff(lightID: number): void {
-    this.backendService.turnLightsOff(session.get(), lightID);
+  turnLightOff(lightIDs: number[]): void {
+    this.backendService.turnLightsOff(session.get(), lightIDs);
   }
+
 }

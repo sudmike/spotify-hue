@@ -1,24 +1,33 @@
 <div *ngIf="sessionActive">
-  <div class="row grid-container" >
+  <div *ngIf="lights && lights.length === 0" class="container py-4" >
+    <div class="col-12" style="height: 30em">
+      <p class="text-muted p-3" style="text-align: center;">
+        It seems as though you don't have any colored lights :( <br>
+        You might have to enable 'Out of home control' in your Hue app!
+      <p>
+    </div>
+  </div>
+  <div *ngIf="lights && lights.length !== 0" class="row light-container">
     <div [className]="(light.reachable) ? 'light-box' : 'light-box disabled-light-box'" *ngFor="let light of lights">
-      <div *ngIf="light.reachable">
-        <img *ngIf="light.active" src="assets/bulbOn.svg" (click)="activateLight(light.id, false)">
-        <img *ngIf="!light.active" src="assets/bulbOff.svg" (click)="activateLight(light.id, true)">
-      </div>
-      <div *ngIf="!light.reachable">
-        <img src="assets/bulbUnreachable.svg">
-      </div>
+      <img [src]="
+      (light.reachable)
+        ? ((light.active)
+          ? 'assets/bulbOn.svg'
+          : 'assets/bulbOff.svg')
+        : 'assets/bulbUnreachable.svg'
+      " (click)="(light.reachable) ? activateLight(light.id, !light.active) : ''" alt="Light bulb">
       <p>{{light.name}}</p>
       <button class="btn btn-dark" [disabled]="!light.reachable" (click)="pingLight(light.id)" title="Ping">
-        <img src="assets/ping.svg">
+        <img src="assets/ping.svg" alt="Ping">
       </button>
       <button class="btn btn-dark" [disabled]="!light.reachable" (click)="turnLightOff(light.id)" title="Turn Off">
-        <img src="assets/turn-off.svg">
+        <img src="assets/turn-off.svg" alt="Turn off">
       </button>
     </div>
   </div>
 
-  <button class="btn btn-danger" [disabled]="!lightsChanged" (click)="saveLightSelection()" >Save</button>
+  <button class="btn btn-danger" [disabled]="!lightsChanged" (click)="saveLightSelection()">Save</button>
+  <button class="btn btn-dark" (click)="getLights()">Refresh</button>
 
 </div>
 
@@ -27,7 +36,7 @@
     <div class="col-12" style="height: 30em">
       <p class="text-muted p-3" style="text-align: center;">
         You'll have to
-        <a href="http://localhost:3000/hue/api/hue-login" target="_blank" rel="">login </a>
+        <a href="javascript:void(0)" (click)="onOpenHueLogin()">login </a>
         with your Philips Hue account to access this page :)
       </p>
     </div>
