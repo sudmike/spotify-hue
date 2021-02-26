@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
 
 @Injectable({
   providedIn: 'root'
@@ -64,8 +64,8 @@ export class BackendCommsService {
       {
         hsl: HSL,
         brightness: Brightness,
-        session: Session
-      }
+      },
+      { headers: new HttpHeaders().set('Authorization', Session) }
     ).toPromise()
       .then((data: any) => {
         if (data.status !== 'success'){
@@ -81,9 +81,9 @@ export class BackendCommsService {
     this.http.post(
       this.backendUrl + '/hue-lightsOff',
       {
-        session: Session,
         lightID: LightID
-      }
+      },
+      { headers: new HttpHeaders().set('Authorization', Session) }
     ).toPromise()
       .then((data: any) => {
         if (data.status !== 'success') {
@@ -97,7 +97,8 @@ export class BackendCommsService {
 
   async getLights(Session: string): Promise<{id: number, name: string, reachable: boolean, active: boolean}[]> {
     return this.http.get(
-      this.backendUrl + '/hue-getLights' + '?session=' + Session
+      this.backendUrl + '/hue-getLights',
+      { headers: new HttpHeaders().set('Authorization', Session) }
     ).toPromise()
       .then((res:
     {status: string, data: {lights: {name: string, id: number, reachable: boolean, active: boolean}[]}} |
@@ -123,9 +124,10 @@ export class BackendCommsService {
     return this.http.post (
       this.backendUrl + '/hue-chooseLights',
       {
-        session: Session,
         lightIDs: LightIDs
-      }
+      },
+      { headers: new HttpHeaders().set('Authorization', Session) }
+
     ).toPromise()
       .then((res:
                {status: string, data: {} } |
@@ -150,9 +152,10 @@ export class BackendCommsService {
     return this.http.post (
       this.backendUrl + '/hue-pingLight',
       {
-        session: Session,
         lightID: LightID
-      }
+      },
+      { headers: new HttpHeaders().set('Authorization', Session) }
+
     ).toPromise()
       .then((res:
                {status: string, data: {} } |
