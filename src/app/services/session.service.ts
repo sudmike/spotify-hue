@@ -1,5 +1,4 @@
 import { Injectable } from '@angular/core';
-import { CookieService } from 'ngx-cookie-service';
 import { interval, Observable } from 'rxjs';
 import { session, Session } from '../shared/session.model';
 
@@ -11,10 +10,10 @@ export class SessionService {
 
   sessionObservable: Observable<Session>;
 
-  constructor(private cookies: CookieService) { }
+  constructor() { }
 
   public refresh(): void {
-    session.set(this.cookies.get('session'));
+    session.set(localStorage.getItem('session'));
   }
 
   // returns observable that informs subscriber when value for session is set
