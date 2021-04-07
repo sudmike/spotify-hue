@@ -47,11 +47,13 @@ export class DashboardComponent implements OnInit, OnDestroy {
   }
 
   onBrightnessChange(): void {
-    if (this.currentTrack && this.currentTrack.imageHsl){
-      this.setLights();
-    }
-    else{
-      console.log('Could not act on brightness change because there is no current track!');
+    if (this.activePolling){
+      if (this.currentTrack && this.currentTrack.imageHsl){
+        this.setLights();
+      }
+      else{
+        console.log('Could not act on brightness change because there is no current track!');
+      }
     }
   }
 
