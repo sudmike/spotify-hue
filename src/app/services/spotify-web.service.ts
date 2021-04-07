@@ -35,6 +35,7 @@ export class SpotifyWebService {
     if (Math.round(Date.now() / 1000) > this.spotifyTokenTime + (60 * 55)) { // access token should be renewed
       return this.refreshAccessToken()
         .then(() => {
+          console.log('Spotify access token has been refreshed');
           return this.getCurrentTrack();
         })
         .catch(err => {
@@ -68,40 +69,52 @@ export class SpotifyWebService {
     }
   }
 
-  async refreshAccessToken(): Promise<void> {
-    if (!this.refreshToken) {
-      return Promise.reject(Error('there is no refresh token to perform the refresh'));
+  async refreshAccessToken(type: string = 'pkce'): Promise<void> {
+    if (type === 'pkce'){ // refresh over back channel
+      if (!this.refreshToken) {
+        return Promise.reject(Error('there is no refresh token to perform the refresh'));
+      }
+      else {
+        return this.http.post( // request to spotify's token endpoint
+          'https://accounts.spotify.com/api/token',
+          new HttpParams()
+            .set('client_id', this.clientId)
+            .set('grant_type', 'refresh_token')
+            .set('refresh_token', this.refreshToken)
+            .toString(),
+          {
+            headers: new HttpHeaders().set('Content-Type', 'application/x-www-form-urlencoded')
+          }
+        ).toPromise()
+          .then(
+            (res:
+               {
+                 access_token: string,
+                 expires_in: number,
+                 refresh_token: string,
+                 scope: string,
+                 token_type: string
+               }
+            ) => {
+              this.setAccessToken(res.access_token);
+              this.refreshToken = res.refresh_token;
+              return Promise.resolve();
+            })
+          .catch(e => {
+            return Promise.reject(Error('failed refreshing spotify tokens'));
+          });
+      }
     }
-    else {
-      return this.http.post( // request to spotify's token endpoint
-        'https://accounts.spotify.com/api/token',
-        new HttpParams()
-          .set('client_id', this.clientId)
-          .set('grant_type', 'refresh_token')
-          .set('refresh_token', this.refreshToken)
-          .toString(),
-        {
-          headers: new HttpHeaders().set('Content-Type', 'application/x-www-form-urlencoded')
-        }
-      ).toPromise()
-        .then(
-          (res:
-             {
-               access_token: string,
-               expires_in: number,
-               refresh_token: string,
-               scope: string,
-               token_type: string
-             }
-          ) => {
-            console.log('d', res);
-            this.setAccessToken(res.access_token);
-            this.refreshToken = res.refresh_token;
-            return Promise.resolve();
-          })
-        .catch(e => {
-          console.log('e', e);
-          return Promise.reject(Error('failed refreshing spotify tokens'));
+    else { // refresh over back channel
+      return this.backendService.getSpotifyRefresh()
+        .then(data => {
+          this.setAccessToken(data.accessToken);
+          return Promise.resolve();
+        })
+        .catch(err => {
+          return (err instanceof Error)
+            ? Promise.reject(err)
+            : Promise.reject(Error('Could not refresh access token'));
         });
     }
   }
@@ -159,13 +172,11 @@ export class SpotifyWebService {
                token_type: string
              }
           ) => {
-            console.log('d', res);
             this.setAccessToken(res.access_token);
             this.refreshToken = res.refresh_token;
             return Promise.resolve();
         })
         .catch(e => {
-          console.log('e', e);
           return Promise.reject();
         });
     }
